@@ -17,7 +17,6 @@ export const generateLoveMessage = async (name: string = "người thương"): P
       contents: prompt,
       config: {
         temperature: 0.8,
-        maxOutputTokens: 100,
       }
     });
 

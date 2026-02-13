@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CosmicBackground from './components/CosmicBackground';
 import PhotoUpload from './components/PhotoUpload';
+import LoveDisplay from './components/LoveDisplay';
 import { generateLoveMessage } from './services/geminiService';
 import { AppState, Theme, THEMES } from './types';
 import { Heart } from 'lucide-react';
@@ -9,6 +10,7 @@ const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [currentTheme, setCurrentTheme] = useState<Theme>(THEMES[0]); // Default to Passion
+  const [loveMessage, setLoveMessage] = useState<string>('');
 
   const handlePhotosSelected = async (files: File[]) => {
     // Create local URLs for all files
@@ -17,7 +19,8 @@ const App: React.FC = () => {
     setAppState(AppState.GENERATING);
 
     // Simulate generating / loading delay
-    await generateLoveMessage();
+    const msg = await generateLoveMessage();
+    setLoveMessage(msg);
     setAppState(AppState.DISPLAY);
   };
 
@@ -25,6 +28,7 @@ const App: React.FC = () => {
     // Revoke all
     photoUrls.forEach(url => URL.revokeObjectURL(url));
     setPhotoUrls([]);
+    setLoveMessage('');
     setAppState(AppState.IDLE);
   };
 
@@ -86,11 +90,14 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* DISPLAY Mode: No UI elements, just the background. Subtle hint. */}
+        {/* DISPLAY Mode */}
         {appState === AppState.DISPLAY && (
-            <div className="absolute bottom-10 animate-pulse text-white/20 text-sm font-light select-none pointer-events-none">
-                Double click anywhere to return
-            </div>
+            <>
+                <LoveDisplay message={loveMessage} onReset={handleReset} />
+                <div className="absolute bottom-10 animate-pulse text-white/20 text-sm font-light select-none pointer-events-none">
+                    Double click anywhere to return
+                </div>
+            </>
         )}
       </main>
 
