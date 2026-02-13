@@ -14,6 +14,17 @@ export interface Star {
   twinkleSpeed: number;
 }
 
+export interface FireworkParticle {
+  x: number;
+  y: number;
+  vx: number; // Velocity X
+  vy: number; // Velocity Y
+  alpha: number; // Opacity
+  color: string;
+  size: number;
+  decay: number; // How fast it fades
+}
+
 export interface Heart {
   x: number;
   y: number;
@@ -25,6 +36,8 @@ export interface Heart {
   opacity: number;
   color: string;
   wobble: number; // For sine wave movement
+  exploding?: boolean; // New: Is the heart dissolving?
+  explodeScale?: number; // New: Scale factor during dissolution
 }
 
 export interface ShootingStar {
