@@ -1,34 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import CosmicBackground from './components/CosmicBackground';
 import PhotoUpload from './components/PhotoUpload';
-import LoveDisplay from './components/LoveDisplay';
-import { generateLoveMessage } from './services/geminiService';
 import { AppState, Theme, THEMES } from './types';
 import { Heart } from 'lucide-react';
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
-  const [currentTheme, setCurrentTheme] = useState<Theme>(THEMES[0]); // Default to Passion
-  const [loveMessage, setLoveMessage] = useState<string>('');
+  const [currentTheme, setCurrentTheme] = useState<Theme>(THEMES[0]); 
 
-  const handlePhotosSelected = async (files: File[]) => {
+  const handlePhotosSelected = (files: File[]) => {
     // Create local URLs for all files
     const urls = files.map(file => URL.createObjectURL(file));
     setPhotoUrls(urls);
-    setAppState(AppState.GENERATING);
-
-    // Simulate generating / loading delay
-    const msg = await generateLoveMessage();
-    setLoveMessage(msg);
+    // Go straight to display mode (Instant visual, no loading/text)
     setAppState(AppState.DISPLAY);
   };
 
   const handleReset = () => {
-    // Revoke all
+    // Revoke all urls to free memory
     photoUrls.forEach(url => URL.revokeObjectURL(url));
     setPhotoUrls([]);
-    setLoveMessage('');
     setAppState(AppState.IDLE);
   };
 
@@ -77,45 +69,22 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {appState === AppState.GENERATING && (
-          <div className="flex flex-col items-center gap-6 animate-pulse">
-            <div className="relative w-32 h-32">
-              <div className="absolute inset-0 border-4 rounded-full animate-spin" style={{ borderColor: `${currentTheme.primary} transparent ${currentTheme.dark} transparent` }}></div>
-              <div className="absolute inset-2 border-4 rounded-full animate-spin-slow" style={{ borderColor: `transparent ${currentTheme.secondary} transparent ${currentTheme.accent}` }}></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                 <Heart className="w-12 h-12 animate-ping" style={{ color: currentTheme.primary, fill: currentTheme.primary }} />
-              </div>
-            </div>
-            <p className="text-xl font-handwriting text-pink-200">Đang kiến tạo ngân hà tình yêu...</p>
-          </div>
-        )}
-
-        {/* DISPLAY Mode */}
+        {/* DISPLAY Mode - Pure Visuals */}
         {appState === AppState.DISPLAY && (
-            <>
-                <LoveDisplay message={loveMessage} onReset={handleReset} />
-                <div className="absolute bottom-10 animate-pulse text-white/20 text-sm font-light select-none pointer-events-none">
-                    Double click anywhere to return
-                </div>
-            </>
+            <div className="absolute bottom-10 animate-pulse text-white/30 text-xs font-light select-none pointer-events-none tracking-widest uppercase opacity-50 hover:opacity-100 transition-opacity">
+                Chạm 2 lần vào màn hình để quay lại
+            </div>
         )}
       </main>
 
       {/* Footer - Only show when NOT in display mode */}
       {appState !== AppState.DISPLAY && (
         <footer className="absolute bottom-4 w-full text-center text-white/30 text-xs z-20 pointer-events-none">
-          <p>© 2025 Cosmic Love Inc. Powered by Gemini.</p>
+          <p>© 2025 Cosmic Love Inc.</p>
         </footer>
       )}
       
       <style>{`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 3s linear infinite;
-        }
         @keyframes fade-in {
             from { opacity: 0; }
             to { opacity: 1; }
