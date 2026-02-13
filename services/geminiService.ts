@@ -1,9 +1,15 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const generateLoveMessage = async (name: string = "người thương"): Promise<string> => {
   try {
+    // Check key existence before initialization to avoid "Uncaught Error" crashing the UI
+    if (!process.env.API_KEY) {
+      console.error("API Key Not Found. Please set API_KEY in Vercel Environment Variables.");
+      return "Hệ thống chưa tìm thấy chìa khóa vào vũ trụ (Thiếu API Key). Hãy kiểm tra cài đặt.";
+    }
+
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
     const prompt = `
       Hãy viết một lời chúc Valentine cực kỳ lãng mạn, ngắn gọn (dưới 60 từ) bằng tiếng Việt.
       Chủ đề là "Vũ trụ và Tình yêu vĩnh cửu". 
